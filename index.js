@@ -61,6 +61,18 @@ async function run() {
     })
 
 
+    app.delete('/room/:id',  async (req, res) => {
+      const {id} = req.params;
+      const result = await roomCollection.deleteOne({_id: new ObjectId(id)})
+      res.json(result)
+    })
+
+
+
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
