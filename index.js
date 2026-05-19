@@ -1,7 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 dotenv.config();
 
 const uri = process.env.MONGODB_URI;
@@ -41,6 +41,25 @@ async function run() {
       const result = await roomCollection.insertOne(roomData);
       res.json(result);
     });
+
+
+    app.get('/room/:id', async(req, res) => {
+      const {id} = req.params
+      const result = await roomCollection.findOne({_id: new ObjectId(id)})
+      res.json(result)
+    })
+
+
+    app.patch("/room/:id", async (req, res) => {
+      const {id}  =  req.params
+      const updatedData =req.body
+      const result = roomCollection.updateOne(
+        {_id: new ObjectId(id)},
+        {$set: updatedData}
+      )
+      res.json(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
