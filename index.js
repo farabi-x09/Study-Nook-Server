@@ -26,10 +26,13 @@ async function run() {
 
     const db = client.db("studynook");
     const roomCollection = db.collection("rooms");
+    const bookingCollection = db.collection("bookings");
 
 
     app.get('/room', async (req, res) => {
-      const result = await roomCollection.find().toArray();
+      const limit = req.query.limit ? parseInt(req.query.limit) : 0;
+      const sort = req.query.sort === 'latest' ? { _id: -1 } : {};
+      const result = await roomCollection.find().sort(sort).limit(limit).toArray();
       res.json(result);
     });
 
@@ -52,8 +55,8 @@ async function run() {
 
     app.patch("/room/:id", async (req, res) => {
       const {id}  =  req.params
-      const updatedData =req.body
-      const result = roomCollection.updateOne(
+      const updatedData = req.body
+      const result = await roomCollection.updateOne(
         {_id: new ObjectId(id)},
         {$set: updatedData}
       )
@@ -69,8 +72,40 @@ async function run() {
 
 
 
+    app.get("/booking", async (req, res) => {
+      const { email } = req.query;
+      const query = email ? { userEmail: email } : {};
+      const result = await bookingCollection.find(query).sort({ date: -1 }).toArray();
+      res.json(result);
+    });
 
+    app.post("/booking", async (req, res) => {
+      const bookingData = req.body;
+      const result = await bookingCollection.insertOne(bookingData);
+      res.json(result);
+    });
 
+    app.patch("/booking/:id", async (req, res) => {
+      const { id } = req.params;
+      const updatedData = req.body;
+      const result = await bookingCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedData }
+      );
+      res.json(result);
+    });
+
+    app.delete("/booking/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await bookingCollection.deleteOne({ _id: new ObjectId(id) });
+      res.json(result);
+    });
+
+    app.get("/booking/:userId", async (req, res) => {
+      const {userId} = req.params
+      const result = await bookingCollection.find({userId: userId}).toArray();
+      res.json(result)
+    })
 
 
     // Send  ping to confirm a successful connnection
