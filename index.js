@@ -14,7 +14,7 @@ const port = process.env.PORT;
 app.use(cors({
   // http://localhost:3000
   // chenge this
-  origin: [`${process.env.CLIEN_URL}`],
+  origin: [`${process.env.CLIENT_URL}`],
   credentials: true,
 }));
 app.use(express.json());
@@ -154,7 +154,6 @@ async function run() {
 
     app.post("/room", verifyToken, async (req, res) => {
       const roomData = req.body;
-      console.log(roomData);
       const result = await roomCollection.insertOne(roomData);
       res.json(result);
     });
@@ -273,3 +272,5 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+module.exports = app;
