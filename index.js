@@ -185,7 +185,7 @@ async function run() {
 
 
 
-    app.get("/booking", verifyToken, async (req, res) => {
+    app.get("/booking",  async (req, res) => {
       const { email } = req.query;
       const query = email ? { userEmail: email } : {};
       const result = await bookingCollection.find(query).sort({ date: -1 }).toArray();
